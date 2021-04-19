@@ -98,4 +98,34 @@ declare namespace API {
     description?: string;
     type?: NoticeIconItemType;
   };
+
+  // -------------------------------------
+
+  type DashboardList = {
+    data?: DashboardItem[];
+    total?: number;
+    success?: boolean;
+  }
+
+  type DashboardItem = {
+    id?: string;
+    code?: string;
+    currentBranch?: string;
+    currentCreateDate?: string;
+    currentReleaseDate?: string;
+    prepareBranch?: string;
+    prepareCreateDate?: string;
+    prepareReleaseDate?: string;
+  }
+
+  type ProjectListItem = {
+    id?: string;
+    code?: string;
+    name?: string;
+    currentBranch?: string;
+    currentReleaseDate?: string;
+    prepareBranch?: string;
+    prepareCreateDate?: string;
+    process?: number
+  };
 }

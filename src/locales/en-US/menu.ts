@@ -1,6 +1,7 @@
 export default {
   'menu.welcome': 'Welcome',
   'menu.project': 'Project',
+  'menu.project.detail': '项目详情',
   'menu.module': 'Module',
   'menu.repository': 'Repository',
   'menu.config': 'Config',

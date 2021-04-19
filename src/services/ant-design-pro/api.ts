@@ -49,7 +49,7 @@ export async function rule(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.RuleList>('/api/rule', {
+  return request<API.RuleList>('/api/project', {
     method: 'GET',
     params: {
       ...params,

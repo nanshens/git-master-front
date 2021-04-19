@@ -1,6 +1,7 @@
 export default {
   'menu.welcome': '欢迎',
   'menu.project': '项目发布管理',
+  'menu.project.detail': '项目详情',
   'menu.module': '模块管理',
   'menu.repository': '仓库管理',
   'menu.config': '配置管理',

@@ -49,6 +49,12 @@
     component: './project',
   },
   {
+    path: '/project/:id',
+    name: 'project.detail',
+    hideInMenu:true,
+    component: './project/detail',
+  },
+  {
     path: '/module',
     name: 'module',
     icon: 'smile',
