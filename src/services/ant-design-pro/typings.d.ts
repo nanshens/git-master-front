@@ -118,6 +118,12 @@ declare namespace API {
     prepareReleaseDate?: string;
   }
 
+  type ProjectList = {
+    data?: ProjectListItem[];
+    total?: number;
+    success?: boolean;
+  }
+
   type ProjectListItem = {
     id?: string;
     code?: string;
@@ -126,6 +132,34 @@ declare namespace API {
     currentReleaseDate?: string;
     prepareBranch?: string;
     prepareCreateDate?: string;
-    process?: number
+    process?: number;
+    note?: string;
+  };
+
+  type ModuleList = {
+    data?: ModuleListItem[];
+    total?: number;
+    success?: boolean;
+  }
+
+  type ModuleListItem = {
+    id?: string;
+    code?: string;
+    name?: string;
+    note?: string;
+  };
+
+  type RepositoryList = {
+    data?: RepositoryListItem[];
+    total?: number;
+    success?: boolean;
+  }
+
+  type RepositoryListItem = {
+    id?: string;
+    code?: string;
+    name?: string;
+    gitSource?: string;
+    note?: string;
   };
 }
