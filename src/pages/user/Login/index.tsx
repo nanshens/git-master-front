@@ -41,7 +41,7 @@ const goto = () => {
 
 const Login: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({data: {}});
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
 
@@ -62,9 +62,13 @@ const Login: React.FC = () => {
     try {
       // 登录
       const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      if (msg.success) {
         message.success('登录成功！');
-        await fetchUserInfo();
+        // await fetchUserInfo();
+        setInitialState({
+          ...initialState,
+          currentUser: {id: msg.data.id, name: msg.data.name},
+        });
         goto();
         return;
       }
@@ -75,7 +79,7 @@ const Login: React.FC = () => {
     }
     setSubmitting(false);
   };
-  const { status, type: loginType } = userLoginState;
+  const { status, type: loginType } = userLoginState.data;
 
   return (
     <div className={styles.container}>

@@ -15,3 +15,22 @@ export async function getRepository(
     ...(options || {}),
   });
 }  
+
+export async function createRepository(body: API.RepositoryListItem, options?: { [key: string]: any }) {
+  return request<API.RepositoryListItem>('/api/repository', {
+    method: 'POST',
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+export async function updateRepository(body: API.RepositoryListItem, options?: { [key: string]: any }) {
+  return request<API.RepositoryListItem>('/api/repository', {
+    method: 'PUT',
+    data: body,
+    ...(options || {}),
+  });
+}

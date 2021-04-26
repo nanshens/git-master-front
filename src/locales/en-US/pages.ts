@@ -92,4 +92,6 @@ export default {
   'pages.gitSource': '仓库地址',
   'pages.note': '备注',
   'pages.edit': '编辑',
+  'pages.create.repository': '创建仓库',
+  'pages.update.repository': '更新仓库',
 };
