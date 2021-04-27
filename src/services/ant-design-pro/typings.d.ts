@@ -146,6 +146,7 @@ declare namespace API {
     prepareCreateDate?: string;
     process?: number;
     note?: string;
+    modules?: ModuleListItem[];
   };
 
   type ModuleList = {

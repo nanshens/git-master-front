@@ -152,7 +152,7 @@ const TableList: React.FC = () => {
           name="repositories"
           creatorButtonProps={{
             position: 'top',
-            creatorButtonText: '添加模块',
+            creatorButtonText: '添加仓库',
           }}
           creatorRecord={{
             id: '',
@@ -213,7 +213,7 @@ const TableList: React.FC = () => {
           initialValue={currentRow?.repositories}
           creatorButtonProps={{
             position: 'top',
-            creatorButtonText: '添加模块',
+            creatorButtonText: '添加仓库',
           }}
           creatorRecord={{
             id: '',

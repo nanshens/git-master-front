@@ -1,96 +1,29 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
-import React, { useState, useRef } from 'react';
+import { Button, message, FormInstance } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
 import { useIntl, FormattedMessage, Link } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
-import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
-import ProDescriptions from '@ant-design/pro-descriptions';
-import type { FormValueType } from './components/UpdateForm';
-import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/api';
+import { ModalForm, ProFormText, ProFormSelect, ProFormList } from '@ant-design/pro-form';
+import { getProject, createProject, updateProject } from '@/services/ant-design-pro/project';
+import { getAllModule } from '@/services/ant-design-pro/module';
 
-/**
- * 添加节点
- *
- * @param fields
- */
-const handleAdd = async (fields: API.RuleListItem) => {
-  const hide = message.loading('正在添加');
-  try {
-    await addRule({ ...fields });
-    hide();
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
-  }
-};
-
-/**
- * 更新节点
- *
- * @param fields
- */
-const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('正在配置');
-  try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
-    hide();
-
-    message.success('配置成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('配置失败请重试！');
-    return false;
-  }
-};
-
-/**
- * 删除节点
- *
- * @param selectedRows
- */
-const handleRemove = async (selectedRows: API.RuleListItem[]) => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-  try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
-};
 
 const TableList: React.FC = () => {
-  /** 新建窗口的弹窗 */
+  const intl = useIntl();
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  /** 分布更新窗口的弹窗 */
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
 
-  const [showDetail, setShowDetail] = useState<boolean>(false);
-
   const actionRef = useRef<ActionType>();
+  const updateRef = useRef<FormInstance>();
+  const createRef = useRef<FormInstance>();
   const [currentRow, setCurrentRow] = useState<API.ProjectListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.ProjectListItem[]>([]);
+  const [module, setModule] = useState<API.ModuleListItem[]>([]);
 
-  /** 国际化配置 */
-  const intl = useIntl();
+  useEffect(() => {
+    getAllModule().then(({ data }) => setModule(data || []));
+  }, []);
 
   const columns: ProColumns<API.ProjectListItem>[] = [
     {
@@ -138,10 +71,39 @@ const TableList: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
+        <a onClick={() => { setCurrentRow(record); handleUpdateModalVisible(true); console.log(record); updateRef.current?.setFieldsValue(record)}}><FormattedMessage id="pages.edit"/></a>,
         <Link to={`/project/${record.id}`}><FormattedMessage id="pages.gotoProject"/></Link>,
       ],
     },
   ];
+
+  const handleAdd = async (fields: API.ProjectListItem) => {
+    const hide = message.loading('正在添加');
+    try {
+      await createProject({ ...fields });
+      hide();
+      message.success('添加成功');
+      return true;
+    } catch (error) {
+      hide();
+      message.error('添加失败请重试！');
+      return false;
+    }
+  };
+
+  const handleUpdate = async (fields: API.ProjectListItem) => {
+    const hide = message.loading('正在更新');
+    try {
+      await updateProject({ ...currentRow, ...fields });
+      hide();
+      message.success('更新成功');
+      return true;
+    } catch (error) {
+      hide();
+      message.error('更新失败请重试！');
+      return false;
+    }
+  };
 
   return (
     <PageContainer>
@@ -162,52 +124,81 @@ const TableList: React.FC = () => {
             <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="新建" />
           </Button>,
         ]}
-        request={rule}
+        request={getProject}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
       />
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: '新建规则',
-        })}
-        width="400px"
+        title={intl.formatMessage({id: 'pages.create.project'})}
+        width="600px"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
+          const success = await handleAdd(value as API.ModuleListItem);
           if (success) {
             handleModalVisible(false);
             if (actionRef.current) {
               actionRef.current.reload();
             }
           }
+          return true
         }}
+        formRef={createRef}
       >
         <ProFormText
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="规则名称为必填项"
-                />
-              ),
+              message: (<FormattedMessage id="pages.code"/>),
             },
           ]}
-          width="md"
-          name="name"
+          name="code"
+          placeholder={intl.formatMessage({id: 'pages.code'})}
         />
-        <ProFormTextArea width="md" name="desc" />
+          <ProFormText
+          rules={[
+            {
+              required: true,
+              message: (<FormattedMessage id="pages.name"/>),
+            },
+          ]}
+          name="name"
+          placeholder={intl.formatMessage({id: 'pages.name'})}
+        />  
+          <ProFormText
+          rules={[
+            {
+              required: true,
+              message: (<FormattedMessage id="pages.note"/>),
+            },
+          ]}
+          name="note"
+          placeholder={intl.formatMessage({id: 'pages.note'})}
+        /> 
+        <ProFormList
+          name="modules"
+          creatorButtonProps={{
+            position: 'top',
+            creatorButtonText: '添加模块',
+          }}
+          creatorRecord={{
+            id: '',
+          }}
+        >
+          <ProFormSelect
+            width={508}
+            name="id"
+            request={async () => module.map(r => ({label: r.code, value: r.id }))}
+          />
+        </ProFormList>
       </ModalForm>
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value);
+      
+      <ModalForm
+        title={intl.formatMessage({id: 'pages.update.project'})}
+        width="600px"
+        visible={updateModalVisible}
+        onVisibleChange={handleUpdateModalVisible}
+        onFinish={async (value) => {
+          const success = await handleUpdate(value as API.ModuleListItem);
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
@@ -215,14 +206,52 @@ const TableList: React.FC = () => {
               actionRef.current.reload();
             }
           }
+          return true
         }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          setCurrentRow(undefined);
-        }}
-        updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
-      />
+        formRef={updateRef}
+      >
+        <ProFormText
+          name="code"
+          disabled
+        />
+          <ProFormText
+          rules={[
+            {
+              required: true,
+              message: (<FormattedMessage id="pages.name"/>),
+            },
+          ]}
+          placeholder={intl.formatMessage({id: 'pages.name'})}
+          name="name"
+        />   
+          <ProFormText
+          rules={[
+            {
+              required: true,
+              message: (<FormattedMessage id="pages.note"/>),
+            },
+          ]}
+          name="note"
+          placeholder={intl.formatMessage({id: 'pages.note'})}
+        />  
+        <ProFormList
+          name="modules"
+          initialValue={currentRow?.modules}
+          creatorButtonProps={{
+            position: 'top',
+            creatorButtonText: '添加模块',
+          }}
+          creatorRecord={{
+            id: '',
+          }}
+        >
+          <ProFormSelect
+            width={508}
+            name="id"
+            request={async () => module.map(r => ({label: r.code, value: r.id }))}
+          />
+        </ProFormList>
+      </ModalForm>
     </PageContainer>
   );
 };
