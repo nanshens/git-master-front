@@ -1,9 +1,8 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography, Space, Row, Col, Button } from 'antd';
+import { Card, Space, Row, Col, Button } from 'antd';
 import { useIntl, FormattedMessage, useModel, Link } from 'umi';
-import styles from './Dashboard.less';
 import { getDashboard } from '@/services/ant-design-pro/dashboard';
 
 export default (): React.ReactNode => {

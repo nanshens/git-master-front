@@ -94,4 +94,10 @@ export default {
   'pages.edit': '编辑',
   'pages.create.repository': '创建仓库',
   'pages.update.repository': '更新仓库',
+  'pages.select.repository': '选择仓库',
+  'pages.create.module': '创建模块',
+  'pages.update.module': '更新模块',
+  'pages.select.module': '选择模块',
+  'pages.create.project': '创建项目',
+  'pages.update.project': '更新项目',
 };

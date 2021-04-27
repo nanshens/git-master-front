@@ -159,6 +159,7 @@ declare namespace API {
     code?: string;
     name?: string;
     note?: string;
+    repositories?: RepositoryListItem[]
   };
 
   type RepositoryList = {
@@ -169,7 +170,7 @@ declare namespace API {
 
   type RepositoryListItem = {
     id?: string;
-    code?: string;
+    code: string;
     name?: string;
     gitSource?: string;
     note?: string;

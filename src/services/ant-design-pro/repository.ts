@@ -16,6 +16,13 @@ export async function getRepository(
   });
 }  
 
+export async function getAllRepository(options?: { [key: string]: any }) {
+  return request<API.RepositoryList>('/api/repository/all', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
 export async function createRepository(body: API.RepositoryListItem, options?: { [key: string]: any }) {
   return request<API.RepositoryListItem>('/api/repository', {
     method: 'POST',
