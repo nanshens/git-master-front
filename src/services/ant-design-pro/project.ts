@@ -37,3 +37,18 @@ export async function updateProject(body: API.ProjectListItem, options?: { [key:
     ...(options || {}),
   });
 }
+
+export async function getReleaseInfo(
+  params: {
+    projectId?: string;
+  },
+  options?: { [key: string]: any },
+) {
+  return request<API.ProjectReleaseInfo>('/api/project/detail', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}

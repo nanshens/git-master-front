@@ -176,4 +176,47 @@ declare namespace API {
     gitSource?: string;
     note?: string;
   };
+
+  type ProjectReleaseInfo = {
+    projectDto: ProjectReleaseDto
+    moduleReleaseDtos: ModuleReleaseDto[]
+  }
+
+  type ProjectReleaseDto = {
+    id: string;
+    code: string;
+    name?: string;
+    note?: string;
+    currentBranch?: string;
+    prepareBranch?: string;
+    currentReleaseTime?: string;
+    currentCreateTime?: string;
+    prepareCreateTime?: string;
+    releaseProgress?: string;
+    uncheckCommit?: string;
+  };
+
+  type ModuleReleaseDto = {
+    id?: string;
+    code: string;
+    name?: string;
+    note?: string;
+    uncheckCommit?: string;
+    currentBranch?: string;
+    prepareBranch?: string;
+    currentReleaseTime?: string;
+    currentCreateTime?: string;
+    prepareCreateTime?: string;
+    repositoryReleaseDtos: RepositoryReleaseDto[]
+  };
+
+  type RepositoryReleaseDto = {
+    id?: string;
+    code: string;
+    name?: string;
+    note?: string;
+    uncheckCommit?: string;
+    currentVersion?: string;
+    prepareVersion?: string;
+  }
 }

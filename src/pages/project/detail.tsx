@@ -1,68 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { HeartTwoTone, SmileTwoTone } from '@ant-design/icons';
-import { Card, Typography, Alert, Button, Row, Col, Space, Statistic, Divider, Drawer, Table, Tag, Input, Select   } from 'antd';
+import { Card, Typography, Alert, Button, Row, Col, Space, Statistic, Divider, Drawer, Table, Tag, Input, Select, Spin } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useIntl, FormattedMessage } from 'umi';
 import ProCard from '@ant-design/pro-card';
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
+import { getReleaseInfo } from '@/services/ant-design-pro/project';
+import moment from 'moment';
 
 const { Option } = Select;
-
-const moduleData: any[] = [
-  {
-    "id": "1231311112",
-    "code": "GE",
-    'currentBranch': '2021W12',
-    'currentReleaseDate': '2020-02-92',
-    'currentCreateDate': '2020-02-92',
-    'prepareBranch': '2022w22',
-    'prepareCreateDate': '2020-02-92',
-    "repository": [
-      {
-        'id': '1231231345523',
-        'code': 'geerp',
-        'currentReleaseVersion': '1sd56f8o',
-        'prepareReleaseVersion': '1sd56f8o',
-        'uncheckCommit': '80',
-      },
-    ]
-  },
-
-  {
-    "id": "1231311112465456",
-    "code": "accounting",
-    'currentBranch': '2021W12',
-    'currentReleaseDate': '2020-02-92',
-    'currentCreateDate': '2020-02-92',
-    'prepareBranch': '2022w22',
-    'prepareCreateDate': '2020-02-92',
-    "repository": [
-      {
-        'id': '123123123',
-        'code': 'dto',
-        'currentReleaseVersion': '1sd56f8o',
-        'prepareReleaseVersion': '1sd56f8o',
-        'uncheckCommit': '80',
-      },
-      {
-        'id': '1231233',
-        'code': 'base',
-        'currentReleaseVersion': '1sd56f8o',
-        'prepareReleaseVersion': '1sd56f8o',
-        'uncheckCommit': '80',
-      },
-      {
-        'id': '1231234',
-        'code': 'client',
-        'currentReleaseVersion': '1sd56f8o',
-        'prepareReleaseVersion': '1sd56f8o',
-        'uncheckCommit': '80',
-      },
-    ]
-  }
-
-
-]
 
 const checkColumns = [
   {
@@ -283,7 +229,13 @@ export default (): React.ReactNode => {
   const [showCheck, setShowCheck] = useState<boolean>(false);
   const [showDiff, setShowDiff] = useState<boolean>(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [detail, setDetail] = useState<API.ProjectReleaseInfo>();
 
+  useEffect(() => {
+    getReleaseInfo({projectId: '4028fee578f8a3e90178f8a3f6e7000a' }).then(({ data }) => {setDetail(data); setLoading(false);});
+    
+  }, []);
   // const rowSelection = {
   //   selectedRowKeys,
   //   onChange: (keys:any, recod:any) => {
@@ -292,12 +244,11 @@ export default (): React.ReactNode => {
   // };
 
   return (
-    
+    <Spin spinning={loading} size="large" tip="超级努力加载中...">
     <PageContainer 
       extra={[
         <Button key="2">编辑信息</Button>,
         <Button key="3">发布历史</Button>,
-        <Button key="6">添加模块</Button>,
         <Button key="1" type='dashed'>创建预发布分支</Button>,
         <Button key="4" type="primary" danger>发布</Button>,
       ]}
@@ -306,19 +257,18 @@ export default (): React.ReactNode => {
           <Col className="gutter-row" span={4}>GE</Col>
           <Col className="gutter-row" span={4}>
             <Row>当前发布分支</Row>
-            <Row>2021W12</Row>
-            <Row>2021-01-11</Row>
-            <Row>2021-01-11</Row>
+            <Row>{detail?.projectDto.currentBranch}</Row>
+            <Row>{moment(detail?.projectDto.currentCreateTime).format('YYYY-MM-DD')}</Row>
+            <Row>{moment(detail?.projectDto.currentReleaseTime).format('YYYY-MM-DD')}</Row>
           </Col>
           <Col className="gutter-row" span={4}>
             <Row>预发布分支</Row>
-            <Row>2021W12</Row>
-            <Row>2021-01-11</Row>
-            <Row>2021-01-11</Row>
+            <Row>{detail?.projectDto.prepareBranch}</Row>
+            <Row>{moment(detail?.projectDto.prepareCreateTime).format('YYYY-MM-DD')}</Row>
           </Col>
           <Col className="gutter-row" span={4}>
             <Row>未验证总提交</Row>
-            <Row>88</Row>
+            <Row>{detail?.projectDto.uncheckCommit}</Row>
           </Col>
           <Col className="gutter-row" span={4}>
             <Row>发布进度</Row>
@@ -327,17 +277,18 @@ export default (): React.ReactNode => {
         </Row>
       }
     >
+      
       <Space direction="vertical" size='large' style={{ width:"100%" }}>
         {  
-          moduleData.map(module => (
+          detail?.moduleReleaseDtos.map(module => (
             <ProCard bordered headerBordered
               title={
                 <Space>
                   {module.code}
                   <Divider type="vertical" style={{ backgroundColor: '#52c41a' }}/>
-                  {module.currentBranch} - {module.currentCreateDate} - {module.currentReleaseDate}
+                  {module.currentBranch} - {moment(module.currentCreateTime).format('YYYY-MM-DD')} - {moment(module.currentReleaseTime).format('YYYY-MM-DD')}
                   <Divider type="vertical" style={{ backgroundColor: '#52c41a' }}/>
-                  {module.prepareBranch} - {module.prepareCreateDate}
+                  {module.prepareBranch} - {moment(module.prepareCreateTime).format('YYYY-MM-DD')}
                 </Space>
               }  
               extra={
@@ -348,21 +299,24 @@ export default (): React.ReactNode => {
                 </Space>
               }
               key={module.id}
+              hoverable
             >
             <ProCard>
               <Space direction="horizontal" size='large' >
                 {
-                  module.repository.map((repository:any) => (
+                  module.repositoryReleaseDtos.map((repository:any) => (
                     <ProCard
+                      hoverable
                       bordered
                       title={
-                        <Space>
-                          {repository.code}
-                          <Divider type="vertical" style={{ backgroundColor: '#fa8c16' }}/>
+                        <Row style={{width: '150px'}}>
+                          <div style={{textAlign: 'center', width: '100%'}}>{repository.code}</div>
+                          
+                          {/* <Divider type="vertical" style={{ backgroundColor: '#fa8c16' }}/>
                           {repository.currentReleaseVersion} 
                           <Divider type="vertical" style={{ backgroundColor: '#fa8c16' }}/>
-                          {repository.prepareReleaseVersion}
-                        </Space>
+                          {repository.prepareReleaseVersion} */}
+                        </Row>
                       } 
                       // style={{ width: 300 }}
                       actions={[
@@ -450,5 +404,6 @@ export default (): React.ReactNode => {
         <Table columns={diffColumns} dataSource={diffData} rowSelection={{ onChange: (_, selectedRows) => {setSelectedRowKeys(selectedRows);}}} ></Table>
       </Drawer>
     </PageContainer>
+    </Spin>
   );
 };
