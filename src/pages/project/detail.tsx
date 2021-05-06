@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { HeartTwoTone, SmileTwoTone } from '@ant-design/icons';
 import { Card, Typography, Alert, Button, Row, Col, Space, Statistic, Divider, Drawer, Table, Tag, Input, Select, Spin } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage, useParams } from 'umi';
 import ProCard from '@ant-design/pro-card';
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
 import { getReleaseInfo } from '@/services/ant-design-pro/project';
@@ -231,11 +231,12 @@ export default (): React.ReactNode => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<API.ProjectReleaseInfo>();
-
+  const params = useParams();
   useEffect(() => {
-    getReleaseInfo({projectId: '4028fee578f8a3e90178f8a3f6e7000a' }).then(({ data }) => {setDetail(data); setLoading(false);});
+    getReleaseInfo({projectId: params.id }).then(({ data }) => {setDetail(data); setLoading(false);});
     
   }, []);
+  
   // const rowSelection = {
   //   selectedRowKeys,
   //   onChange: (keys:any, recod:any) => {
