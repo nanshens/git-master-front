@@ -23,8 +23,8 @@ export async function getAllRepository(options?: { [key: string]: any }) {
   });
 }
 
-export async function createRepository(body: API.RepositoryListItem, options?: { [key: string]: any }) {
-  return request<API.RepositoryListItem>('/api/repository', {
+export async function createRepository(body: API.RepositoryDto, options?: { [key: string]: any }) {
+  return request<API.RepositoryDto>('/api/repository', {
     method: 'POST',
     // headers: {
     //   'Content-Type': 'application/json',
@@ -34,8 +34,8 @@ export async function createRepository(body: API.RepositoryListItem, options?: {
   });
 }
 
-export async function updateRepository(body: API.RepositoryListItem, options?: { [key: string]: any }) {
-  return request<API.RepositoryListItem>('/api/repository', {
+export async function updateRepository(body: API.RepositoryDto, options?: { [key: string]: any }) {
+  return request<API.RepositoryDto>('/api/repository', {
     method: 'PUT',
     data: body,
     ...(options || {}),

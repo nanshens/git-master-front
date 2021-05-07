@@ -23,16 +23,16 @@ export async function getAllModule(options?: { [key: string]: any }) {
   });
 }
 
-export async function createModule(body: API.ModuleListItem, options?: { [key: string]: any }) {
-  return request<API.ModuleListItem>('/api/module', {
+export async function createModule(body: API.ModuleListDto, options?: { [key: string]: any }) {
+  return request<API.ModuleListDto>('/api/module', {
     method: 'POST',
     data: body,
     ...(options || {}),
   });
 }
 
-export async function updateModule(body: API.ModuleListItem, options?: { [key: string]: any }) {
-  return request<API.ModuleListItem>('/api/module', {
+export async function updateModule(body: API.ModuleListDto, options?: { [key: string]: any }) {
+  return request<API.ModuleListDto>('/api/module', {
     method: 'PUT',
     data: body,
     ...(options || {}),

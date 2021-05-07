@@ -114,12 +114,12 @@ declare namespace API {
   // -------------------------------------
 
   type DashboardList = {
-    data?: DashboardItem[];
+    data?: DashboardDto[];
     total?: number;
     success?: boolean;
   }
 
-  type DashboardItem = {
+  type DashboardDto = {
     id?: string;
     code?: string;
     currentBranch?: string;
@@ -131,12 +131,12 @@ declare namespace API {
   }
 
   type ProjectList = {
-    data?: ProjectListItem[];
+    data?: ProjectListDto[];
     total?: number;
     success?: boolean;
   }
 
-  type ProjectListItem = {
+  type ProjectListDto = {
     id?: string;
     code?: string;
     name?: string;
@@ -146,30 +146,30 @@ declare namespace API {
     prepareCreateDate?: string;
     process?: number;
     note?: string;
-    modules?: ModuleListItem[];
+    modules?: ModuleListDto[];
   };
 
   type ModuleList = {
-    data?: ModuleListItem[];
+    data?: ModuleListDto[];
     total?: number;
     success?: boolean;
   }
 
-  type ModuleListItem = {
+  type ModuleListDto = {
     id?: string;
     code?: string;
     name?: string;
     note?: string;
-    repositories?: RepositoryListItem[]
+    repositories?: RepositoryDto[]
   };
 
   type RepositoryList = {
-    data?: RepositoryListItem[];
+    data?: RepositoryDto[];
     total?: number;
     success?: boolean;
   }
 
-  type RepositoryListItem = {
+  type RepositoryDto = {
     id?: string;
     code: string;
     name?: string;
@@ -197,7 +197,7 @@ declare namespace API {
   };
 
   type ModuleReleaseDto = {
-    id?: string;
+    id: string;
     code: string;
     name?: string;
     note?: string;
@@ -218,5 +218,25 @@ declare namespace API {
     uncheckCommit?: string;
     currentVersion?: string;
     prepareVersion?: string;
+  }
+
+  type CheckMessageDto = {
+    id: string;
+    commitVersion: string;
+    commitAuthor: string;
+    commitMessage: string;
+    commitTimestamp: string;
+    checkBranch: string;
+    checkGitInfoId: string;
+    checkStatus: boolean;
+    checkUser: string;
+    checkDate: string;
+  }
+
+  type SingleResultDto = {
+    data: object;
+    code: string;
+    message: string;
+    success: boolean;
   }
 }

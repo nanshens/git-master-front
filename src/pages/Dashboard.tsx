@@ -8,7 +8,7 @@ import { getDashboard } from '@/services/ant-design-pro/dashboard';
 export default (): React.ReactNode => {
   const intl = useIntl();
   const { initialState } = useModel('@@initialState');
-  const [dashboard, setDashboard] = useState<API.DashboardItem[]>([]);
+  const [dashboard, setDashboard] = useState<API.DashboardDto[]>([]);
 
   useEffect(() => {
     getDashboard().then(({ data }) => setDashboard(data || []));

@@ -1,20 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { HeartTwoTone, SmileTwoTone } from '@ant-design/icons';
-import { Card, Typography, Alert, Button, Row, Col, Space, Statistic, Divider, Drawer, Table, Tag, Input, Select, Spin } from 'antd';
+import { Card, Typography, Alert, Button, Row, Col, Space, Statistic, Divider, Drawer, Table, Tag, Input, Select, Spin, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useIntl, FormattedMessage, useParams } from 'umi';
 import ProCard from '@ant-design/pro-card';
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
-import { getReleaseInfo } from '@/services/ant-design-pro/project';
+import { getReleaseInfo, refreshCheckMessage, getCheckMessage } from '@/services/ant-design-pro/project';
 import moment from 'moment';
 
 const { Option } = Select;
 
 const checkColumns = [
   {
+    title: <FormattedMessage id="pages.commitTime"/>,
+    dataIndex: 'commitTimestamp',
+    key: 'commitTimestamp',
+    render: (time:string) => (
+      time === null ? '' : moment(parseInt(time) * 1000).format('YYYY-MM-DD hh:mm:ss')
+    )
+  },
+  {
     title: <FormattedMessage id="pages.commitVersion"/>,
     dataIndex: 'commitVersion',
     key: 'commitVersion',
+    render: (version:string) => (
+      version.substring(0, 10)
+    )
   },
   {
     title: <FormattedMessage id="pages.commitAuthor"/>,
@@ -23,13 +34,16 @@ const checkColumns = [
   },
   {
     title: <FormattedMessage id="pages.commitInfo"/>,
-    dataIndex: 'commitInfo',
-    key: 'commitInfo',
+    dataIndex: 'commitMessage',
+    key: 'commitMessage',
+    render: (message:string) => (
+      message.substring(0, 100)
+    )
   },
   {
     title: <FormattedMessage id="pages.commitCheck"/>,
-    dataIndex: 'commitCheck',
-    key: 'commitCheck',
+    dataIndex: 'commitStatus',
+    key: 'commitStatus',
     render: (check:boolean) => (
       <Tag color={check ? "green" : "red"}>
         {check ? "已验证": "未验证"}
@@ -45,78 +59,32 @@ const checkColumns = [
     title: <FormattedMessage id="pages.checkDate"/>,
     dataIndex: 'checkDate',
     key: 'checkDate',
+    render: (datetime:string) => (
+      datetime === null ? '' : moment(datetime).format('YYYY-MM-DD hh:mm:ss')
+    )
   },
   {
     title: <FormattedMessage id="pages.checkNote"/>,
-    dataIndex: 'checkNote',
-    key: 'checkNote',
+    dataIndex: 'note',
+    key: 'note',
   },
   {
     title: <FormattedMessage id="pages.searchTable.titleOption"/>,
     dataIndex: 'option',
     key: 'option',
+    width: 120,
     render: (_:any, record:any) => (
       <Space key = '1'>
         <a key="check" onClick={() => { }} >
         <FormattedMessage id="pages.check" />
-      </a>
+        </a>
+        <a key="note" onClick={() => { }} >
+        <FormattedMessage id="pages.note" />
+        </a>
       </Space>
     )
   },
 ];
-
-const checkData: any[] = [
-  {
-    "id": "1",
-    "commitVersion": "1231vcgs1",
-    "commitAuthor": "zhang",
-    "commitInfo": "TAM-123 12313QEJSDHGFSHVFJ ;",
-    "commitCheck": false,
-    "checkUser": "ping",
-    "checkDate": "2020-02-12",
-    "checkNote": "tam test [ass",
-  },
-  {
-    "id": "2",
-    "commitVersion": "1231vcgs1",
-    "commitAuthor": "zhang",
-    "commitInfo": "TAM-123 12313QEJSDHGFSHVFJ ;",
-    "commitCheck": true,
-    "checkUser": "ping",
-    "checkDate": "2020-02-12",
-    "checkNote": "tam test [ass",
-  },
-  {
-    "id": "3",
-    "commitVersion": "1231vcgs1",
-    "commitAuthor": "zhang",
-    "commitInfo": "TAM-123 12313QEJSDHGFSHVFJ ;",
-    "commitCheck": false,
-    "checkUser": "ping",
-    "checkDate": "2020-02-12",
-    "checkNote": "tam test [ass",
-  },
-  {
-    "id": "4",
-    "commitVersion": "1231vcgs1",
-    "commitAuthor": "zhang",
-    "commitInfo": "TAM-123 12313QEJSDHGFSHVFJ ;",
-    "commitCheck": true,
-    "checkUser": "ping",
-    "checkDate": "2020-02-12",
-    "checkNote": "tam test [ass",
-  },
-  {
-    "id": "5",
-    "commitVersion": "1231vcgs1",
-    "commitAuthor": "zhang",
-    "commitInfo": "TAM-123 12313QEJSDHGFSHVFJ ;",
-    "commitCheck": false,
-    "checkUser": "ping",
-    "checkDate": "2020-02-12",
-    "checkNote": "tam test [ass",
-  }
-]
 
 const diffColumns = [
   {
@@ -231,10 +199,10 @@ export default (): React.ReactNode => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<API.ProjectReleaseInfo>();
+  const [checkMessage, setCheckMessage] = useState<API.CheckMessageDto[]>([]);
   const params = useParams();
   useEffect(() => {
     getReleaseInfo({projectId: params.id }).then(({ data }) => {setDetail(data); setLoading(false);});
-    
   }, []);
   
   // const rowSelection = {
@@ -244,12 +212,24 @@ export default (): React.ReactNode => {
   //     setSelectedRowKeys(keys)},
   // };
 
+  const refreshCheckMessageClick = (moduleId?:string) => {
+    refreshCheckMessage({projectId: params.id,  moduleId: moduleId}).then(({ data }) => message.success('更新了 ' + data + ' 个提交'));
+    getReleaseInfo({projectId: params.id }).then(({ data }) => {setDetail(data); setLoading(false);});
+  } 
+
+  const checkMessageClick = (moduleId:string, gitInfoId: string) => {
+    setCheckMessage([])
+    getCheckMessage({projectId: params.id,  moduleId, gitInfoId}).then(({ data }) => setCheckMessage(data));
+    setShowCheck(true);
+  }
+
   return (
     <Spin spinning={loading} size="large" tip="超级努力加载中...">
     <PageContainer 
       extra={[
         <Button key="2">编辑信息</Button>,
         <Button key="3">发布历史</Button>,
+        <Button key="5" onClick={() => refreshCheckMessageClick()}>刷新提交</Button>,
         <Button key="1" type='dashed'>创建预发布分支</Button>,
         <Button key="4" type="primary" danger>发布</Button>,
       ]}
@@ -295,6 +275,7 @@ export default (): React.ReactNode => {
               extra={
                 <Space>
                   <Button key="1" >查看发布历史</Button>
+                  <Button key="4" onClick={() => refreshCheckMessageClick(module.id)}>刷新提交</Button>
                   <Button key="2" type='dashed'>创建预发布分支</Button>
                   <Button key="3" type="primary" danger>发布</Button>
                 </Space>
@@ -321,7 +302,7 @@ export default (): React.ReactNode => {
                       } 
                       // style={{ width: 300 }}
                       actions={[
-                        <a key="checkcommit"  onClick={() => { setShowCheck(true); }} > <FormattedMessage id="pages.checkCommit" /></a>,
+                        <a key="checkcommit"  onClick={() => checkMessageClick(module.id, repository.id)} > <FormattedMessage id="pages.checkCommit" /></a>,
                         <a key="diffcompare" onClick={() => { setShowDiff(true);}} > <FormattedMessage id="pages.diffCompare" /> </a>
                       ]}
                       key={repository.id}
@@ -342,7 +323,7 @@ export default (): React.ReactNode => {
         }
       </Space>
       <Drawer
-        width="60%"
+        width="80%"
         maskClosable={false}
         visible={showCheck}
         closable={false}
@@ -353,8 +334,10 @@ export default (): React.ReactNode => {
         }
         footer={
           <div style={{ textAlign: 'right' }}>
-            <Button onClick={() => setShowCheck(false)} style={{ marginRight: 8 }}> 取消 </Button>
-            <Button onClick={() =>{}} type="primary"> 保存 </Button>
+            <Row gutter={16}>
+              <Col span={12}><Button onClick={() => setShowCheck(false)} style={{ width: "100%" }}> 取消 </Button></Col>
+              <Col span={12}><Button onClick={() =>{}} type="primary" style={{ width: "100%" }}> 批量验证 </Button></Col>
+            </Row>
           </div>
         }
       >
@@ -374,7 +357,7 @@ export default (): React.ReactNode => {
             <Row>12d3cd22</Row>
           </Col>
         </Row>
-        <Table columns={checkColumns} dataSource={checkData} 
+        <Table columns={checkColumns} dataSource={checkMessage} 
           rowSelection={{ onChange: (_, selectedRows) => {setSelectedRowKeys(selectedRows);}}} />
       </Drawer>
       <Drawer

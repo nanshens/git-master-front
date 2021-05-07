@@ -22,16 +22,16 @@ export async function getAllProject(options?: { [key: string]: any }) {
   });
 }
 
-export async function createProject(body: API.ProjectListItem, options?: { [key: string]: any }) {
-  return request<API.ProjectListItem>('/api/project', {
+export async function createProject(body: API.ProjectListDto, options?: { [key: string]: any }) {
+  return request<API.ProjectListDto>('/api/project', {
     method: 'POST',
     data: body,
     ...(options || {}),
   });
 }
 
-export async function updateProject(body: API.ProjectListItem, options?: { [key: string]: any }) {
-  return request<API.ProjectListItem>('/api/project', {
+export async function updateProject(body: API.ProjectListDto, options?: { [key: string]: any }) {
+  return request<API.ProjectListDto>('/api/project', {
     method: 'PUT',
     data: body,
     ...(options || {}),
@@ -45,6 +45,39 @@ export async function getReleaseInfo(
   options?: { [key: string]: any },
 ) {
   return request<API.ProjectReleaseInfo>('/api/project/detail', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+export async function refreshCheckMessage(
+  params: {
+    projectId: string;
+    moduleId?: string;
+  },
+  options?: { [key: string]: any },
+) {
+  return request<API.SingleResultDto>('/api/project/refreshcheckcommit', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+export async function getCheckMessage(
+  params: {
+    projectId: string;
+    moduleId: string;
+    gitInfoId: string;
+  },
+  options?: { [key: string]: any },
+) {
+  return request<API.CheckMessageDto>('/api/project/checkcommit', {
     method: 'GET',
     params: {
       ...params,

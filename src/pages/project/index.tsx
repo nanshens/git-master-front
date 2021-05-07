@@ -18,14 +18,14 @@ const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const updateRef = useRef<FormInstance>();
   const createRef = useRef<FormInstance>();
-  const [currentRow, setCurrentRow] = useState<API.ProjectListItem>();
-  const [module, setModule] = useState<API.ModuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<API.ProjectListDto>();
+  const [module, setModule] = useState<API.ModuleListDto[]>([]);
 
   useEffect(() => {
     getAllModule().then(({ data }) => setModule(data || []));
   }, []);
 
-  const columns: ProColumns<API.ProjectListItem>[] = [
+  const columns: ProColumns<API.ProjectListDto>[] = [
     {
       title: <FormattedMessage id="pages.code"  />,
       dataIndex: 'code',
@@ -77,7 +77,7 @@ const TableList: React.FC = () => {
     },
   ];
 
-  const handleAdd = async (fields: API.ProjectListItem) => {
+  const handleAdd = async (fields: API.ProjectListDto) => {
     const hide = message.loading('正在添加');
     try {
       await createProject({ ...fields });
@@ -91,7 +91,7 @@ const TableList: React.FC = () => {
     }
   };
 
-  const handleUpdate = async (fields: API.ProjectListItem) => {
+  const handleUpdate = async (fields: API.ProjectListDto) => {
     const hide = message.loading('正在更新');
     try {
       await updateProject({ ...currentRow, ...fields });
@@ -107,7 +107,7 @@ const TableList: React.FC = () => {
 
   return (
     <PageContainer>
-      <ProTable<API.ProjectListItem, API.PageParams>
+      <ProTable<API.ProjectListDto, API.PageParams>
         actionRef={actionRef}
         rowKey="code"
         search={{
@@ -133,7 +133,7 @@ const TableList: React.FC = () => {
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.ModuleListItem);
+          const success = await handleAdd(value as API.ModuleListDto);
           if (success) {
             handleModalVisible(false);
             if (actionRef.current) {
@@ -198,7 +198,7 @@ const TableList: React.FC = () => {
         visible={updateModalVisible}
         onVisibleChange={handleUpdateModalVisible}
         onFinish={async (value) => {
-          const success = await handleUpdate(value as API.ModuleListItem);
+          const success = await handleUpdate(value as API.ModuleListDto);
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);

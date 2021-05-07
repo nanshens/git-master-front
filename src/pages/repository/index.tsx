@@ -14,12 +14,12 @@ const TableList: React.FC = () => {
 
   const actionRef = useRef<ActionType>();
   const formRef = useRef<FormInstance>();
-  const [currentRow, setCurrentRow] = useState<API.RepositoryListItem>();
+  const [currentRow, setCurrentRow] = useState<API.RepositoryDto>();
 
   /** 国际化配置 */
   const intl = useIntl();
 
-  const columns: ProColumns<API.RepositoryListItem>[] = [
+  const columns: ProColumns<API.RepositoryDto>[] = [
     {
       title: <FormattedMessage id="pages.code"  />,
       dataIndex: 'code',
@@ -52,7 +52,7 @@ const TableList: React.FC = () => {
     },
   ];
 
-  const handleAdd = async (fields: API.RepositoryListItem) => {
+  const handleAdd = async (fields: API.RepositoryDto) => {
     const hide = message.loading('正在添加');
     try {
       await createRepository({ ...fields });
@@ -66,7 +66,7 @@ const TableList: React.FC = () => {
     }
   };
 
-  const handleUpdate = async (fields: API.RepositoryListItem) => {
+  const handleUpdate = async (fields: API.RepositoryDto) => {
     const hide = message.loading('正在更新');
     try {
       await updateRepository({ ...currentRow, ...fields });
@@ -82,7 +82,7 @@ const TableList: React.FC = () => {
 
   return (
     <PageContainer>
-      <ProTable<API.RepositoryListItem, API.PageParams>
+      <ProTable<API.RepositoryDto, API.PageParams>
         actionRef={actionRef}
         rowKey="code"
         search={{
@@ -108,7 +108,7 @@ const TableList: React.FC = () => {
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.RepositoryListItem);
+          const success = await handleAdd(value as API.RepositoryDto);
           if (success) {
             handleModalVisible(false);
             if (actionRef.current) {
@@ -166,7 +166,7 @@ const TableList: React.FC = () => {
         visible={updateModalVisible}
         onVisibleChange={handleUpdateModalVisible}
         onFinish={async (value) => {
-          const success = await handleUpdate(value as API.RepositoryListItem);
+          const success = await handleUpdate(value as API.RepositoryDto);
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);

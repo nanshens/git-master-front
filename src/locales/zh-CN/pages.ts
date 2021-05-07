@@ -78,6 +78,7 @@ export default {
   'pages.gotoProject': '进入项目',
   'pages.diffCompare': '差异对比',
   'pages.commitVersion': '提交版本',
+  'pages.commitTime': '提交时间',
   'pages.commitAuthor': '提交作者',
   'pages.commitInfo': '提交信息',
   'pages.commitBranch': '提交分支',
