@@ -204,13 +204,6 @@ export default (): React.ReactNode => {
   useEffect(() => {
     getReleaseInfo({projectId: params.id }).then(({ data }) => {setDetail(data); setLoading(false);});
   }, []);
-  
-  // const rowSelection = {
-  //   selectedRowKeys,
-  //   onChange: (keys:any, recod:any) => {
-  //     console.log(keys, recod)
-  //     setSelectedRowKeys(keys)},
-  // };
 
   const refreshCheckMessageClick = (moduleId?:string) => {
     refreshCheckMessage({projectId: params.id,  moduleId: moduleId}).then(({ data }) => message.success('更新了 ' + data + ' 个提交'));
@@ -357,8 +350,7 @@ export default (): React.ReactNode => {
             <Row>12d3cd22</Row>
           </Col>
         </Row>
-        <Table columns={checkColumns} dataSource={checkMessage} 
-          rowSelection={{ onChange: (_, selectedRows) => {setSelectedRowKeys(selectedRows);}}} />
+        <Table columns={checkColumns} dataSource={checkMessage} rowSelection={{}} rowKey="id"/>
       </Drawer>
       <Drawer
         width="60%"

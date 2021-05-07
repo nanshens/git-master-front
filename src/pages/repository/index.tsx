@@ -47,7 +47,7 @@ const TableList: React.FC = () => {
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
-        <a onClick={() => { setCurrentRow(record); handleUpdateModalVisible(true); formRef.current?.setFieldsValue(record)}}><FormattedMessage id="pages.edit"/></a>,
+        <a key="1" onClick={() => { setCurrentRow(record); handleUpdateModalVisible(true); formRef.current?.setFieldsValue(record)}}><FormattedMessage id="pages.edit"/></a>,
       ],
     },
   ];
