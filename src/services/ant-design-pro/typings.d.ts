@@ -114,26 +114,27 @@ declare namespace API {
   // -------------------------------------
 
   type DashboardList = {
-    data?: DashboardDto[];
-    total?: number;
-    success?: boolean;
+    data: DashboardDto[];
+    total: number;
+    success: boolean;
   }
 
   type DashboardDto = {
-    id?: string;
-    code?: string;
-    currentBranch?: string;
-    currentCreateDate?: string;
-    currentReleaseDate?: string;
-    prepareBranch?: string;
-    prepareCreateDate?: string;
-    prepareReleaseDate?: string;
+    id: string;
+    code: string;
+    currentBranch: string;
+    currentCreateDate: string;
+    currentReleaseDate: string;
+    prepareBranch: string;
+    prepareCreateDate: string;
+    uncheckCommit: number;
+    totalCheckCommit: number;
   }
 
   type ProjectList = {
-    data?: ProjectListDto[];
-    total?: number;
-    success?: boolean;
+    data: ProjectListDto[];
+    total: number;
+    success: boolean;
   }
 
   type ProjectListDto = {
