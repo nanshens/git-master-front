@@ -1,90 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { HeartTwoTone, SmileTwoTone } from '@ant-design/icons';
-import { Card, Typography, Alert, Button, Row, Col, Space, Statistic, Divider, Drawer, Table, Tag, Input, Select, Spin, message } from 'antd';
+import { Card, Typography, Alert, Button, Row, Col, Space, Statistic, Divider, Drawer, Table, Tag, Input, Select, Spin, message, FormInstance } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useIntl, FormattedMessage, useParams } from 'umi';
 import ProCard from '@ant-design/pro-card';
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
-import { getReleaseInfo, refreshCheckMessage, getCheckMessage } from '@/services/ant-design-pro/project';
+import { getReleaseInfo, refreshCheckMessage, getCheckMessage, postCheckMessage } from '@/services/ant-design-pro/project';
 import moment from 'moment';
+import { ModalForm, ProFormText, } from '@ant-design/pro-form';
 
-const { Option } = Select;
 
-const checkColumns = [
-  {
-    title: <FormattedMessage id="pages.commitTime"/>,
-    dataIndex: 'commitTimestamp',
-    key: 'commitTimestamp',
-    render: (time:string) => (
-      time === null ? '' : moment(parseInt(time) * 1000).format('YYYY-MM-DD hh:mm:ss')
-    )
-  },
-  {
-    title: <FormattedMessage id="pages.commitVersion"/>,
-    dataIndex: 'commitVersion',
-    key: 'commitVersion',
-    render: (version:string) => (
-      version.substring(0, 10)
-    )
-  },
-  {
-    title: <FormattedMessage id="pages.commitAuthor"/>,
-    dataIndex: 'commitAuthor',
-    key: 'commitAuthor',
-  },
-  {
-    title: <FormattedMessage id="pages.commitInfo"/>,
-    dataIndex: 'commitMessage',
-    key: 'commitMessage',
-    render: (message:string) => (
-      message.substring(0, 100)
-    )
-  },
-  {
-    title: <FormattedMessage id="pages.commitCheck"/>,
-    dataIndex: 'commitStatus',
-    key: 'commitStatus',
-    render: (check:boolean) => (
-      <Tag color={check ? "green" : "red"}>
-        {check ? "已验证": "未验证"}
-      </Tag>
-    )
-  },
-  {
-    title: <FormattedMessage id="pages.checkUser"/>,
-    dataIndex: 'checkUser',
-    key: 'checkUser',
-  },
-  {
-    title: <FormattedMessage id="pages.checkDate"/>,
-    dataIndex: 'checkDate',
-    key: 'checkDate',
-    render: (datetime:string) => (
-      datetime === null ? '' : moment(datetime).format('YYYY-MM-DD hh:mm:ss')
-    )
-  },
-  {
-    title: <FormattedMessage id="pages.checkNote"/>,
-    dataIndex: 'note',
-    key: 'note',
-  },
-  {
-    title: <FormattedMessage id="pages.searchTable.titleOption"/>,
-    dataIndex: 'option',
-    key: 'option',
-    width: 120,
-    render: (_:any, record:any) => (
-      <Space key = '1'>
-        <a key="check" onClick={() => { }} >
-        <FormattedMessage id="pages.check" />
-        </a>
-        <a key="note" onClick={() => { }} >
-        <FormattedMessage id="pages.note" />
-        </a>
-      </Space>
-    )
-  },
-];
 
 const diffColumns = [
   {
@@ -193,13 +118,92 @@ const diffData: any[] = [
 ]
 
 export default (): React.ReactNode => {
+  const checkColumns = [
+    {
+      title: <FormattedMessage id="pages.commitTime"/>,
+      dataIndex: 'commitTimestamp',
+      key: 'commitTimestamp',
+      render: (time:string) => (
+        time === null ? '' : moment(parseInt(time) * 1000).format('YYYY-MM-DD HH:mm:ss')
+      )
+    },
+    {
+      title: <FormattedMessage id="pages.commitVersion"/>,
+      dataIndex: 'commitVersion',
+      key: 'commitVersion',
+      render: (version:string) => (
+        version.substring(0, 10)
+      )
+    },
+    {
+      title: <FormattedMessage id="pages.commitAuthor"/>,
+      dataIndex: 'commitAuthor',
+      key: 'commitAuthor',
+    },
+    {
+      title: <FormattedMessage id="pages.commitInfo"/>,
+      dataIndex: 'commitMessage',
+      key: 'commitMessage',
+      render: (message:string) => (
+        message.substring(0, 100)
+      )
+    },
+    {
+      title: <FormattedMessage id="pages.commitCheck"/>,
+      dataIndex: 'checkStatus',
+      key: 'checkStatus',
+      render: (check:boolean) => (
+        <Tag color={check ? "green" : "red"}>
+          {check ? "已验证": "未验证"}
+        </Tag>
+      )
+    },
+    {
+      title: <FormattedMessage id="pages.checkUser"/>,
+      dataIndex: 'checkUser',
+      key: 'checkUser',
+    },
+    {
+      title: <FormattedMessage id="pages.checkDate"/>,
+      dataIndex: 'checkDate',
+      key: 'checkDate',
+      render: (datetime:string) => (
+        datetime === null ? '' : moment(datetime).format('YYYY-MM-DD hh:mm:ss')
+      )
+    },
+    {
+      title: <FormattedMessage id="pages.checkNote"/>,
+      dataIndex: 'note',
+      key: 'note',
+    },
+    {
+      title: <FormattedMessage id="pages.searchTable.titleOption"/>,
+      dataIndex: 'option',
+      key: 'option',
+      width: 80,
+      render: (_:any, record:any) => (
+        <Space key = '1'>
+          <a key="check" onClick={() => { setCurrentRow(record); handleCheckModalVisible(true); }} >
+          <FormattedMessage id="pages.check" />
+          </a>
+          {/* <a key="note" onClick={() => { }} >
+          <FormattedMessage id="pages.note" />
+          </a> */}
+        </Space>
+      )
+    },
+  ];
+
   const intl = useIntl();
+  const checkRef = useRef<FormInstance>();
   const [showCheck, setShowCheck] = useState<boolean>(false);
   const [showDiff, setShowDiff] = useState<boolean>(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
+  const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
+  const [currentRow, setCurrentRow] = useState<API.CheckMessageDto>();
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<API.ProjectReleaseInfo>();
   const [checkMessage, setCheckMessage] = useState<API.CheckMessageDto[]>([]);
+  const [checkModalVisible, handleCheckModalVisible] = useState<boolean>(false);
   const params = useParams();
   useEffect(() => {
     getReleaseInfo({projectId: params.id }).then(({ data }) => {setDetail(data); setLoading(false);});
@@ -216,6 +220,31 @@ export default (): React.ReactNode => {
     setShowCheck(true);
   }
 
+  const handleCheckMessage = async (note:string) => {
+    const hide = message.loading('正在更新');
+    try {
+      if (currentRow === undefined) {
+        if (selectedRowIds.length > 0){
+          await postCheckMessage({ checkUser:'admin', commits:selectedRowIds, note});
+          setSelectedRowIds([]);
+        }
+      } else {
+        await postCheckMessage({ checkUser:'admin', commits:[currentRow.id], note});
+        setCurrentRow(undefined);
+      }
+      hide();
+      message.success('更新成功');
+      return true;
+    } catch (error) {
+      hide();
+      message.error('更新失败请重试！');
+      return false;
+    }
+  };
+
+  const onSelectChange = (keys: any) => {
+    setSelectedRowIds(keys);
+  }
   return (
     <Spin spinning={loading} size="large" tip="超级努力加载中...">
     <PageContainer 
@@ -316,6 +345,7 @@ export default (): React.ReactNode => {
         }
       </Space>
       <Drawer
+        zIndex={999}
         width="80%"
         maskClosable={false}
         visible={showCheck}
@@ -329,7 +359,7 @@ export default (): React.ReactNode => {
           <div style={{ textAlign: 'right' }}>
             <Row gutter={16}>
               <Col span={12}><Button onClick={() => setShowCheck(false)} style={{ width: "100%" }}> 取消 </Button></Col>
-              <Col span={12}><Button onClick={() =>{}} type="primary" style={{ width: "100%" }}> 批量验证 </Button></Col>
+              <Col span={12}><Button onClick={() =>{ handleCheckModalVisible(true);}} type="primary" style={{ width: "100%" }}> 批量验证 </Button></Col>
             </Row>
           </div>
         }
@@ -350,7 +380,8 @@ export default (): React.ReactNode => {
             <Row>12d3cd22</Row>
           </Col>
         </Row>
-        <Table columns={checkColumns} dataSource={checkMessage} rowSelection={{}} rowKey="id"/>
+        <Table columns={checkColumns} dataSource={checkMessage} 
+        rowSelection={{onChange: onSelectChange}} rowKey="id"/>
       </Drawer>
       <Drawer
         width="60%"
@@ -379,6 +410,31 @@ export default (): React.ReactNode => {
         <Table columns={diffColumns} dataSource={diffData} rowSelection={{ onChange: (_, selectedRows) => {setSelectedRowKeys(selectedRows);}}}></Table>
         <Table columns={diffColumns} dataSource={diffData} rowSelection={{ onChange: (_, selectedRows) => {setSelectedRowKeys(selectedRows);}}} ></Table>
       </Drawer>
+      <ModalForm
+        modalProps={{zIndex: 1000}}
+        title={intl.formatMessage({id: 'pages.update.checkMessage'})}
+        width="600px"
+        visible={checkModalVisible}
+        onVisibleChange={handleCheckModalVisible}
+        onFinish={async (value) => {
+          const success = await handleCheckMessage(value.note);
+          if (success) {
+            handleCheckModalVisible(false);
+            setCurrentRow(undefined);
+          }
+          return true
+        }}
+        formRef={checkRef}
+      >
+        {/* <ProFormText
+          name="code"
+          disabled
+        /> */}
+          <ProFormText
+          placeholder={intl.formatMessage({id: 'pages.note'})}
+          name="note"
+        />
+      </ModalForm>
     </PageContainer>
     </Spin>
   );

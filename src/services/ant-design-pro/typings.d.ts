@@ -239,4 +239,10 @@ declare namespace API {
     message: string;
     success: boolean;
   }
+
+  type CheckCommitDto = {
+    checkUser: string;
+    commits: string[];
+    note?: string;
+  }
 }

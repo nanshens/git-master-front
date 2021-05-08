@@ -101,4 +101,6 @@ export default {
   'pages.select.module': '选择模块',
   'pages.create.project': '创建项目',
   'pages.update.project': '更新项目',
+  'pages.update.checkMessage': '更新验证信息',
+  
 };

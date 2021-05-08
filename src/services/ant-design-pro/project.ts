@@ -85,3 +85,19 @@ export async function getCheckMessage(
     ...(options || {}),
   });
 }
+
+export async function postCheckMessage(body: API.CheckCommitDto, options?: { [key: string]: any }) {
+  return request<API.SingleResultDto>('/api/project/checkcommit', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}
+
+export async function addCheckMessageNote(body: API.CheckCommitDto, options?: { [key: string]: any }) {
+  return request<API.SingleResultDto>('/api/project/addcommitnote', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}
