@@ -102,5 +102,6 @@ export default {
   'pages.create.project': '创建项目',
   'pages.update.project': '更新项目',
   'pages.update.checkMessage': '更新验证信息',
-  
+  'pages.issueStatus': 'issue状态',
+  'pages.issueCode': 'issue编号',
 };

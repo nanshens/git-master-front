@@ -144,9 +144,20 @@ export default (): React.ReactNode => {
       title: <FormattedMessage id="pages.commitInfo"/>,
       dataIndex: 'commitMessage',
       key: 'commitMessage',
+      width: 400,
       render: (message:string) => (
         message.substring(0, 100)
       )
+    },
+    {
+      title: <FormattedMessage id="pages.issueCode"/>,
+      dataIndex: 'issueCode',
+      key: 'issueCode',
+    },
+    {
+      title: <FormattedMessage id="pages.issueStatus"/>,
+      dataIndex: 'issueStatus',
+      key: 'issueStatus',
     },
     {
       title: <FormattedMessage id="pages.commitCheck"/>,
@@ -180,15 +191,15 @@ export default (): React.ReactNode => {
       title: <FormattedMessage id="pages.searchTable.titleOption"/>,
       dataIndex: 'option',
       key: 'option',
-      width: 80,
+      width: 180,
       render: (_:any, record:any) => (
         <Space key = '1'>
           <a key="check" onClick={() => { setCurrentRow(record); handleCheckModalVisible(true); }} >
           <FormattedMessage id="pages.check" />
           </a>
-          {/* <a key="note" onClick={() => { }} >
-          <FormattedMessage id="pages.note" />
-          </a> */}
+          <a key="note" onClick={() => { }} >
+            分支提交情况
+          </a>
         </Space>
       )
     },
@@ -210,8 +221,9 @@ export default (): React.ReactNode => {
   }, []);
 
   const refreshCheckMessageClick = (moduleId?:string) => {
-    refreshCheckMessage({projectId: params.id,  moduleId: moduleId}).then(({ data }) => message.success('更新了 ' + data + ' 个提交'));
-    getReleaseInfo({projectId: params.id }).then(({ data }) => {setDetail(data); setLoading(false);});
+    setLoading(true);
+    refreshCheckMessage({projectId: params.id,  moduleId: moduleId}).then(({ data }) => {message.success('更新了 ' + data + ' 个提交'); setLoading(false);});
+    // getReleaseInfo({projectId: params.id }).then(({ data }) => {setDetail(data); setLoading(false);});
   } 
 
   const checkMessageClick = (moduleId:string, gitInfoId: string) => {
@@ -251,13 +263,13 @@ export default (): React.ReactNode => {
       extra={[
         <Button key="2">编辑信息</Button>,
         <Button key="3">发布历史</Button>,
-        <Button key="5" onClick={() => refreshCheckMessageClick()}>刷新提交</Button>,
+        <Button key="5" onClick={() => refreshCheckMessageClick()}>获取最新提交</Button>,
         <Button key="1" type='dashed'>创建预发布分支</Button>,
         <Button key="4" type="primary" danger>发布</Button>,
       ]}
       content={
         <Row gutter={16}>
-          <Col className="gutter-row" span={4}>GE</Col>
+          <Col className="gutter-row" span={4}>{detail?.projectDto.code}</Col>
           <Col className="gutter-row" span={4}>
             <Row>当前发布分支</Row>
             <Row>{detail?.projectDto.currentBranch}</Row>
@@ -297,7 +309,7 @@ export default (): React.ReactNode => {
               extra={
                 <Space>
                   <Button key="1" >查看发布历史</Button>
-                  <Button key="4" onClick={() => refreshCheckMessageClick(module.id)}>刷新提交</Button>
+                  <Button key="4" onClick={() => refreshCheckMessageClick(module.id)}>获取最新提交</Button>
                   <Button key="2" type='dashed'>创建预发布分支</Button>
                   <Button key="3" type="primary" danger>发布</Button>
                 </Space>
